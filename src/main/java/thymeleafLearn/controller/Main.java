@@ -87,5 +87,9 @@ public class Main {
     public String socket() {
         return "socket";
     }
+    @RequestMapping("/videochat")
+    public String videochat() {
+        return "videochat";
+    }
 
 }

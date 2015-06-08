@@ -1,0 +1,41 @@
+<html>
+<head>
+    <!--<link rel="shortcut icon" href="./img/revo.png" type="image/png"/>-->
+    <script src="./js/kurento-utils.js"></script>
+    <script src="./js/adapter.js"></script>
+    <script src="./js/index.js"></script>
+    <script src="./js/sockjs-0.3.4.js"></script>
+    <script src="./js/stomp.js"></script>
+
+
+    <title>Revo</title>
+</head>
+<body>
+<div class="container">
+    <div>
+    </div>
+    <div>
+        <table>
+            <tr>
+                <td>
+                    <div>
+                        <center>
+                            <a id="Sendbtn" href="#" onclick="Send(); return false;">Send</a>
+                        </center>
+                        <video id="videoInput" autoplay="" width="480px" height="360px" ></video>
+                    </div>
+                </td>
+                <td>
+                    <div>
+                        <center>
+                            <a id="Recivebtn" href="#" onclick="Recive(); return false;">Recive</a>
+                        </center>
+                        <video id="videoOutput" autoplay="" width="480px" height="360px"></video>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+</body>
+</html>

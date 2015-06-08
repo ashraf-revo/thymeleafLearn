@@ -1,5 +1,8 @@
 package thymeleafLearn.controller;
 
+import org.kurento.client.KurentoClient;
+import org.kurento.client.MediaPipeline;
+import org.kurento.client.WebRtcEndpoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -17,11 +20,28 @@ public class GreetingController {
 
     @Autowired
     SimpMessagingTemplate template;
+    @Autowired
+    private KurentoClient kurento;
+    MediaPipeline pipeline;
+    WebRtcEndpoint webRtcEndpoint;
 
     @MessageMapping("/hello")
-    public void greeting(Principal principal,HelloMessage message) throws Exception {
+    public void greeting(Principal principal, HelloMessage message) throws Exception {
         System.out.println(principal.getName());
-        template.convertAndSendToUser("revo","/topic/greetings", new Greeting("Hello, " + message.getName() + "!"));
-  }
+        template.convertAndSendToUser("revo", "/topic/greetings", new Greeting("Hello, " + message.getName() + "!"));
+    }
 
+    @MessageMapping("/IwillSend")
+    public void IwillSend(String sdpOffer, Principal principal) {
+        pipeline = kurento.createMediaPipeline();
+        webRtcEndpoint = new WebRtcEndpoint.Builder(pipeline).build();
+        template.convertAndSendToUser(principal.getName(), "/topic/Send", webRtcEndpoint.processOffer(sdpOffer));
+    }
+
+    @MessageMapping("/IwillRecive")
+    public void IwillRecive(String sdpOffer, Principal principal) {
+        WebRtcEndpoint nextWebRtc = new WebRtcEndpoint.Builder(pipeline).build();
+        webRtcEndpoint.connect(nextWebRtc);
+        template.convertAndSendToUser(principal.getName(), "/topic/Recive", nextWebRtc.processOffer(sdpOffer));
+    }
 }
