@@ -14,9 +14,7 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 @Configuration
 public class configLocale extends WebMvcConfigurerAdapter {
 
-
-
-    @Bean
+   @Bean
     public LocaleResolver localeResolver() {
         CookieLocaleResolver slr = new CookieLocaleResolver();
         return slr;

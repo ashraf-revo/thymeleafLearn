@@ -12,6 +12,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import thymeleafLearn.domain.Greeting;
 import thymeleafLearn.domain.HelloMessage;
+import thymeleafLearn.service.OnlineSession;
 
 import java.security.Principal;
 
@@ -24,10 +25,8 @@ public class GreetingController {
     private KurentoClient kurento;
     MediaPipeline pipeline;
     WebRtcEndpoint webRtcEndpoint;
-
     @MessageMapping("/hello")
     public void greeting(Principal principal, HelloMessage message) throws Exception {
-        System.out.println(principal.getName());
         template.convertAndSendToUser("revo", "/topic/greetings", new Greeting("Hello, " + message.getName() + "!"));
     }
 
