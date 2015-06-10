@@ -16,8 +16,9 @@ public class socialConfig extends SocialConfigurerAdapter {
     public UserIdSource getUserIdSource() {
         return new AuthenticationNameUserIdSource();
     }
+
     @Bean
     public ProviderSignInUtils signInUtils() {
-       return  new ProviderSignInUtils();
+        return new ProviderSignInUtils();
     }
 }

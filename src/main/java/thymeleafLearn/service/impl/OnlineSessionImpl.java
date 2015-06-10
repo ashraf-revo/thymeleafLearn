@@ -25,9 +25,7 @@ public class OnlineSessionImpl implements OnlineSession {
 
     @Override
     public void AddOnlineUser(String name, String simpSessionId) {
-        concurrentHashMap.put(name, new HashSet<>(Arrays.asList(simpSessionId)));
-
-    }
+        concurrentHashMap.put(name, new HashSet<>(Arrays.asList(simpSessionId)));}
 
     @Override
     public void RemoveOnlineUser(String name) {

@@ -7,6 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.RememberMeServices;
+import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.UserProfile;
 import org.springframework.social.connect.web.ProviderSignInUtils;
 import org.springframework.stereotype.Controller;
@@ -72,23 +73,29 @@ public class Main {
 
     @RequestMapping("/signup")
     public String signup(WebRequest request, HttpServletRequest req, HttpServletResponse res) {
-        UserProfile userProfile = signInUtils.getConnectionFromSession(request).fetchUserProfile();
+        Connection<?> connectionFromSession = signInUtils.getConnectionFromSession(request);
+        if (connectionFromSession != null) {
+            UserProfile userProfile = connectionFromSession.fetchUserProfile();
 
-        user u = userService.findByEmail(userProfile.getEmail());
-        if (u == null) {
-            String iid = encoder.encode(UUID.randomUUID().toString());
-            u = userService.save(new user(userProfile.getEmail(), iid, userProfile.getName()));
+            user u = userService.findByEmail(userProfile.getEmail());
+            if (u == null) {
+                String iid = encoder.encode(UUID.randomUUID().toString());
+                u = userService.save(new user(userProfile.getEmail(), iid, userProfile.getName()));
+            }
+            Authentication authentication = new UsernamePasswordAuthenticationToken(u.getEmail(), u.getPassword(), u.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            signInUtils.doPostSignUp(userProfile.getEmail(), request);
+            services.loginSuccess(req, res, authentication);
+            return "redirect:/";
         }
-        Authentication authentication = new UsernamePasswordAuthenticationToken(u.getEmail(), u.getPassword(), u.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        signInUtils.doPostSignUp(userProfile.getEmail(), request);
-        services.loginSuccess(req, res, authentication);
-        return "redirect:/";
+        return "redirect:/error";
     }
+
     @RequestMapping("/socket")
     public String socket() {
         return "socket";
     }
+
     @RequestMapping("/videochat")
     public String videochat() {
         return "videochat";

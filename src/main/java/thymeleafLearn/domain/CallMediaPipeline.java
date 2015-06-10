@@ -16,26 +16,26 @@ public class CallMediaPipeline {
     public CallMediaPipeline() {
     }
 
-    public CallMediaPipeline(org.kurento.client.MediaPipeline mediaPipeline, thymeleafLearn.domain.MediaPipelineType mediaPipelineType, Set<userSession> sessions) {
-        MediaPipeline = mediaPipeline;
-        MediaPipelineType = mediaPipelineType;
-        this.sessions = sessions;
+    public CallMediaPipeline(MediaPipeline mediaPipeline, MediaPipelineType mediaPipelineType, userSession userSession) {
+        this.MediaPipeline = mediaPipeline;
+        this.MediaPipelineType = mediaPipelineType;
+        this.sessions.add(userSession);
     }
 
-    public org.kurento.client.MediaPipeline getMediaPipeline() {
+    public MediaPipeline getMediaPipeline() {
         return MediaPipeline;
     }
 
-    public CallMediaPipeline setMediaPipeline(org.kurento.client.MediaPipeline mediaPipeline) {
+    public CallMediaPipeline setMediaPipeline(MediaPipeline mediaPipeline) {
         MediaPipeline = mediaPipeline;
         return this;
     }
 
-    public thymeleafLearn.domain.MediaPipelineType getMediaPipelineType() {
+    public MediaPipelineType getMediaPipelineType() {
         return MediaPipelineType;
     }
 
-    public CallMediaPipeline setMediaPipelineType(thymeleafLearn.domain.MediaPipelineType mediaPipelineType) {
+    public CallMediaPipeline setMediaPipelineType(MediaPipelineType mediaPipelineType) {
         MediaPipelineType = mediaPipelineType;
         return this;
     }
@@ -48,4 +48,9 @@ public class CallMediaPipeline {
         this.sessions = sessions;
         return this;
     }
+
+    public void AdduserSession(userSession userSession) {
+        this.sessions.add(userSession);
+    }
+
 }

@@ -26,6 +26,8 @@ public class PresenceEventListener implements ApplicationListener<ApplicationEve
     SimpMessagingTemplate template;
     @Autowired
     OnlineSession onlineSession;
+    @Autowired
+    MediaPipelineService pipelineService;
 
     private void handleSessionConnected(SessionConnectEvent event) {
         final Principal principal = SimpMessageHeaderAccessor.getUser(event.getMessage().getHeaders());
@@ -49,6 +51,7 @@ public class PresenceEventListener implements ApplicationListener<ApplicationEve
 
         if (s.size() > 1) {
             s.remove(simpSessionId);
+            pipelineService.SomeOneRemoveSessionCheckHim(simpSessionId);
             onlineSession.UpdateOne(principal.getName(), s);
         } else {
 
@@ -81,5 +84,4 @@ public class PresenceEventListener implements ApplicationListener<ApplicationEve
             handleSessionDisconnect((SessionDisconnectEvent) event);
         }
     }
-
 }
