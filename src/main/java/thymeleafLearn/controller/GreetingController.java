@@ -44,4 +44,5 @@ public class GreetingController {
         webRtcEndpoint.connect(nextWebRtc);
         template.convertAndSendToUser(principal.getName(), "/topic/Recive", nextWebRtc.processOffer(sdpOffer));
     }
+
 }

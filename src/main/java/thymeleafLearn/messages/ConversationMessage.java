@@ -10,18 +10,19 @@ import java.io.Serializable;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ConversationMessage implements Serializable {
     private MessageType messageType;
+    private String Content;
     private String From;
     private String To;
-    private String Content;
 
     public ConversationMessage() {
     }
 
-    public ConversationMessage(MessageType messageType, String from, String to, String content) {
+
+    public ConversationMessage(MessageType messageType, String content, String from, String to) {
         this.messageType = messageType;
+        Content = content;
         From = from;
         To = to;
-        Content = content;
     }
 
     public MessageType getMessageType() {

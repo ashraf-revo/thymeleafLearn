@@ -12,9 +12,9 @@ import java.util.Set;
  */
 public interface MediaPipelineService {
 
-    public boolean CreatePipeline(MediaPipelineType mediaPipelineType, userSession sessions, String sdpOffer);
+    public void CreatePipeline(MediaPipelineType mediaPipelineType, userSession sessions, String sdpOffer);
 
-    public boolean addUserToPipeline(String NameOfCreatorOfPipeline, userSession userSession, String sdpOffer);
+    public void addUserToPipeline(String NameOfCreatorOfPipeline, userSession userSession, String sdpOffer);
 
     public void ReleasePipelineUsingNameOfCreatorOfPipeline(String NameOfCreatorOfPipeline);
 

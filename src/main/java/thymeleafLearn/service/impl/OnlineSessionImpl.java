@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import thymeleafLearn.domain.user;
+import thymeleafLearn.messages.ConversationMessage;
+import thymeleafLearn.messages.MessageType;
 import thymeleafLearn.service.OnlineSession;
 
 import java.util.Arrays;
@@ -18,28 +20,69 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Service
 public class OnlineSessionImpl implements OnlineSession {
-    ConcurrentHashMap<String, Set<String>> concurrentHashMap=new ConcurrentHashMap<>();
+    ConcurrentHashMap<String, Set<String>> OnlineSessionData = new ConcurrentHashMap<>();
+    ConcurrentHashMap<String, Set<String>> HaveAccessToMediaPipeline = new ConcurrentHashMap<>();
     @Autowired
     SimpMessagingTemplate template;
 
+    @Override
+    public void CreateMediaPipeline(String MediaPipeline) {
+        HaveAccessToMediaPipeline.put(MediaPipeline, new HashSet<>());
+    }
+
+    @Override
+    public void CreateMediaPipeline(String MediaPipeline, Set<String> HaveAccess) {
+        HaveAccessToMediaPipeline.put(MediaPipeline, HaveAccess);
+    }
+
+    @Override
+    public void CreateMediaPipeline(String MediaPipeline, String HaveAccess) {
+        HaveAccessToMediaPipeline.put(MediaPipeline, new HashSet<>(Arrays.asList(HaveAccess)));
+    }
+
+    @Override
+    public void AddUserToMediaPipeline(String MediaPipeline, String HaveAccess) {
+        if (HaveAccessToMediaPipeline.contains(MediaPipeline))
+            HaveAccessToMediaPipeline.get(MediaPipeline).add(HaveAccess);
+    }
+
+    @Override
+    public void AddUserToMediaPipeline(String MediaPipeline, Set<String> HaveAccess) {
+        if (HaveAccessToMediaPipeline.contains(MediaPipeline))
+            HaveAccessToMediaPipeline.get(MediaPipeline).addAll(HaveAccess);
+    }
+
+    @Override
+    public void RemoveMediaPipeline(String MediaPipeline) {
+
+        if (HaveAccessToMediaPipeline.contains(MediaPipeline)) HaveAccessToMediaPipeline.remove(MediaPipeline);
+    }
+
+    @Override
+    public boolean IhaveAccessToMediaPipeline(String MediaPipeline, String ME) {
+        if (HaveAccessToMediaPipeline.contains(MediaPipeline))
+            return HaveAccessToMediaPipeline.get(MediaPipeline).stream().anyMatch(x -> x.equals(ME));
+        return false;
+    }
 
     @Override
     public void AddOnlineUser(String name, String simpSessionId) {
-        concurrentHashMap.put(name, new HashSet<>(Arrays.asList(simpSessionId)));}
+        OnlineSessionData.put(name, new HashSet<>(Arrays.asList(simpSessionId)));
+    }
 
     @Override
     public void RemoveOnlineUser(String name) {
-        concurrentHashMap.remove(name);
+        OnlineSessionData.remove(name);
     }
 
     @Override
     public Set<String> UserSessions(String name) {
-        return concurrentHashMap.get(name);
+        return OnlineSessionData.get(name);
     }
 
     @Override
     public void UpdateOne(String name, Set<String> s) {
-        concurrentHashMap.put(name, s);
+        OnlineSessionData.put(name, s);
     }
 
     @Override
@@ -54,10 +97,12 @@ public class OnlineSessionImpl implements OnlineSession {
 //        person.setIsonline(Sate);
 //        ser.updatePerson(person);
     }
+
     public synchronized void Notfiy(List<user> personList, String group, String user) {
         for (user person : personList) {
             template.convertAndSendToUser(
-                    person.getEmail(), "/topic/moveuser", "");
+                    person.getEmail(), "/topic/message",
+                    new ConversationMessage(MessageType.LOGOUT_MESSAGE, group, user, null));
         }
     }
 }

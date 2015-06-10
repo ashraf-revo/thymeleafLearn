@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import thymeleafLearn.domain.user;
-import thymeleafLearn.repositery.userRepositery;
+import thymeleafLearn.repositery.userRepository;
 import thymeleafLearn.service.userService;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
 @Transactional
 public class userServiceImpl implements userService {
     @Autowired
-    userRepositery Repositery;
+    userRepository Repositery;
 
     @Override
     public user findByEmail(String email) {

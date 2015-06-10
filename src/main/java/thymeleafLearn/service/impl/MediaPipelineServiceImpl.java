@@ -10,7 +10,10 @@ import thymeleafLearn.domain.CallMediaPipeline;
 import thymeleafLearn.domain.MediaPipelineType;
 import thymeleafLearn.domain.UserType;
 import thymeleafLearn.domain.userSession;
+import thymeleafLearn.messages.ConversationMessage;
+import thymeleafLearn.messages.MessageType;
 import thymeleafLearn.service.MediaPipelineService;
+import thymeleafLearn.service.OnlineSession;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,30 +28,35 @@ public class MediaPipelineServiceImpl implements MediaPipelineService {
     @Autowired
     SimpMessagingTemplate template;
     @Autowired
-    KurentoClient kurento;
+    KurentoClient kurentoClient;
+    @Autowired
+    OnlineSession onlineSession;
 
 
     @Override
-    public boolean CreatePipeline(MediaPipelineType mediaPipelineType, userSession sessions, String sdpOffer) {
+    public void CreatePipeline(MediaPipelineType mediaPipelineType, userSession sessions, String sdpOffer) {
 
         if (!HaveOrInMediaPipeline(sessions.getName())) {
             CallMediaPipeline pipeline = new CallMediaPipeline();
-            pipeline.setMediaPipeline(kurento.createMediaPipeline());
+            pipeline.setMediaPipeline(kurentoClient.createMediaPipeline());
             pipeline.AdduserSession(sessions.setWebRtcEndpoint(new WebRtcEndpoint.Builder(pipeline.getMediaPipeline()).build()));
             pipeline.setMediaPipelineType(mediaPipelineType);
             mediaPipelines.add(pipeline);
             Optional<userSession> first = pipeline.getSessions().stream().findFirst();
             first.ifPresent(x -> {
                 String s = x.getWebRtcEndpoint().processOffer(sdpOffer);
-//                will send message -->s to session.getname
+                template.convertAndSendToUser(sessions.getName(), "/topic/message",
+                        new ConversationMessage(MessageType.SDPOFFER_MESSAGE, s, null, null));
             });
-            return true;
+
         }
-        return false;
+        template.convertAndSendToUser(sessions.getName(), "/topic/message",
+                new ConversationMessage(MessageType.ERROR, "Error Create " + mediaPipelineType + " We Think You In Running Video Chat ", null, null));
+
     }
 
     @Override
-    public boolean addUserToPipeline(String NameOfCreatorOfPipeline, userSession sessions, String sdpOffer) {
+    public void addUserToPipeline(String NameOfCreatorOfPipeline, userSession sessions, String sdpOffer) {
         if (!HaveOrInMediaPipeline(sessions.getName())) {
             {
                 CallMediaPipeline callMediaPipeline = getCallMediaPipeline(NameOfCreatorOfPipeline);
@@ -57,17 +65,20 @@ public class MediaPipelineServiceImpl implements MediaPipelineService {
                     Optional<userSession> first = callMediaPipeline.getSessions().stream().findFirst();
                     first.ifPresent(x -> x.getWebRtcEndpoint().connect(rtcEndpoint));
                     callMediaPipeline.AdduserSession(sessions.setWebRtcEndpoint(rtcEndpoint));
-                    Optional<String> s = Optional.of(sessions.getWebRtcEndpoint().processOffer(sdpOffer));
-                    s.ifPresent(x -> {
-//                will send message -->s to session.getname
+                    Optional<String> x = Optional.of(sessions.getWebRtcEndpoint().processOffer(sdpOffer));
+                    x.ifPresent(s -> {
+                        template.convertAndSendToUser(sessions.getName(), "/topic/message",
+                                new ConversationMessage(MessageType.SDPOFFER_MESSAGE, s, null, null));
                     });
-                    return true;
+
                 }
             }
 
         }
+        template.convertAndSendToUser(sessions.getName(), "/topic/message",
+                new ConversationMessage(MessageType.ERROR, "Error Adding You in This We Think You In Running Video Chat ", null, null));
 
-        return false;
+
     }
 
     @Override
@@ -76,18 +87,27 @@ public class MediaPipelineServiceImpl implements MediaPipelineService {
         if (callMediaPipeline != null) {
             callMediaPipeline.getMediaPipeline().release();
             callMediaPipeline.getSessions().stream().filter(x -> !x.getName().equals(NameOfCreatorOfPipeline)).forEach(x -> {
-//                will send message -->s to session.getname
+                template.convertAndSendToUser(x.getName(), "/topic/message",
+                        new ConversationMessage(MessageType.RELEASE_PIPELINE_MESSAGE, null, null, null));
 
             });
             mediaPipelines.remove(callMediaPipeline);
+            onlineSession.RemoveMediaPipeline(NameOfCreatorOfPipeline);
         }
     }
 
     @Override
     public void ReleasePipelineUsingSessionId(CallMediaPipeline CallMediaPipeline, List<userSession> collect, String simpSessionId) {
         CallMediaPipeline.getMediaPipeline().release();
-        collect.stream().filter(z -> z.getSession() != simpSessionId).forEach(a -> {
-//                will send message -->s to session.getname
+        collect.stream().filter(z -> {
+            if (z.getSession() != simpSessionId) return true;
+            else {
+                onlineSession.RemoveMediaPipeline(z.getName());
+                return false;
+            }
+        }).forEach(a -> {
+            template.convertAndSendToUser(a.getName(), "/topic/message",
+                    new ConversationMessage(MessageType.RELEASE_PIPELINE_MESSAGE, null, null, null));
         });
         mediaPipelines.remove(CallMediaPipeline);
 
@@ -136,6 +156,5 @@ public class MediaPipelineServiceImpl implements MediaPipelineService {
                 ReleasePipelineUsingSessionId(x, collect, simpSessionId);
             }
         });
-
     }
 }
