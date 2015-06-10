@@ -20,7 +20,7 @@ public class GreetingController {
     @Autowired
     SimpMessagingTemplate template;
     @Autowired
-    KurentoClient kurento;
+    KurentoClient kurentoClient;
     MediaPipeline pipeline;
     WebRtcEndpoint webRtcEndpoint;
     WebRtcEndpoint nextWebRtc;
@@ -32,7 +32,7 @@ public class GreetingController {
 
     @MessageMapping("/IwillSend")
     public void IwillSend(String sdpOffer, Principal principal) {
-        pipeline = kurento.createMediaPipeline();
+        pipeline = kurentoClient.createMediaPipeline();
         webRtcEndpoint = new WebRtcEndpoint.Builder(pipeline).build();
         template.convertAndSendToUser(principal.getName(), "/topic/Send", webRtcEndpoint.processOffer(sdpOffer));
     }
@@ -44,5 +44,4 @@ public class GreetingController {
         webRtcEndpoint.connect(nextWebRtc);
         template.convertAndSendToUser(principal.getName(), "/topic/Recive", nextWebRtc.processOffer(sdpOffer));
     }
-
 }

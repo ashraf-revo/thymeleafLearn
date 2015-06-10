@@ -12,12 +12,10 @@ import org.springframework.social.connect.UserProfile;
 import org.springframework.social.connect.web.ProviderSignInUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 import thymeleafLearn.domain.user;
+import thymeleafLearn.messages.ConversationMessage;
 import thymeleafLearn.service.OnlineSession;
 import thymeleafLearn.service.userService;
 
@@ -101,4 +99,9 @@ public class Main {
         return "videochat";
     }
 
+    @RequestMapping(value = "/message",method = RequestMethod.POST)
+    @ResponseBody
+    public ConversationMessage message(@ModelAttribute ConversationMessage message) {
+        return message;
+    }
 }

@@ -12,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.social.security.SpringSocialConfigurer;
 
 /**
@@ -29,6 +30,7 @@ public class securityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests().antMatchers("/signup/**", "/auth/**").permitAll().
                 and().authorizeRequests().antMatchers("/**").authenticated().
+                and().logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout")).
                 and().formLogin().and().rememberMe().key(key).rememberMeServices(rememberMeServices())
                 .and().apply(new SpringSocialConfigurer());
     }
