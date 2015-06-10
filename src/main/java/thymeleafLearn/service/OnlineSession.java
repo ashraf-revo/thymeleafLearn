@@ -22,6 +22,7 @@ public interface OnlineSession {
     public void AddUserToMediaPipeline(String MediaPipeline, Set<String> HaveAccess);
 
     public boolean IhaveAccessToMediaPipeline(String MediaPipeline, String ME);
+
     public void RemoveMediaPipeline(String MediaPipeline);
 
     public void AddOnlineUser(String name, String simpSessionId);
