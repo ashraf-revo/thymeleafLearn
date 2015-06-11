@@ -6,11 +6,15 @@ import org.kurento.client.RecorderEndpoint;
 import org.kurento.client.WebRtcEndpoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import thymeleafLearn.domain.Greeting;
 import thymeleafLearn.domain.HelloMessage;
+import thymeleafLearn.messages.ConversationMessage;
+import thymeleafLearn.messages.MessageType;
+import thymeleafLearn.service.MessageService;
 
 import java.security.Principal;
 
@@ -24,6 +28,8 @@ public class GreetingController {
     MediaPipeline pipeline;
     WebRtcEndpoint webRtcEndpoint;
     WebRtcEndpoint nextWebRtc;
+    @Autowired
+    MessageService messageService;
 
     @MessageMapping("/hello")
     public void greeting(Principal principal, HelloMessage message) throws Exception {
@@ -43,6 +49,20 @@ public class GreetingController {
         nextWebRtc = new WebRtcEndpoint.Builder(pipeline).build();
         webRtcEndpoint.connect(nextWebRtc);
         template.convertAndSendToUser(principal.getName(), "/topic/Recive", nextWebRtc.processOffer(sdpOffer));
+    }
+
+    @MessageMapping("/message")
+    public void message(Principal principal, ConversationMessage message, SimpMessageHeaderAccessor header) {
+        String sessionId = header.getSessionId();
+        String name = principal.getName();
+        if (message.getMessageType() != null) {
+            if (message.getMessageType() == MessageType.SDPOFFER_MESSAGE)
+                messageService.HandelSDPOFFER_MESSAGE(message, sessionId, name);
+            if (message.getMessageType() == MessageType.INVITE_TO_PIPELINE_MESSAGE)
+                messageService.HandelINVITE_TO_PIPELINE_MESSAGE(message, sessionId, name);
+            if (message.getMessageType() == MessageType.CREATE_PIPELINE_MESSAGE)
+                messageService.HandelCREATE_PIPELINE_MESSAGE(message, sessionId, name);
+        }
     }
 
 }

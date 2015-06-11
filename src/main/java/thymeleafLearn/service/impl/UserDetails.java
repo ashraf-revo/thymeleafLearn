@@ -16,14 +16,14 @@ import thymeleafLearn.repositery.userRepository;
  */
 @Service
 @Transactional
-public class UserDetiles implements UserDetailsService, SocialUserDetailsService {
+public class UserDetails implements UserDetailsService, SocialUserDetailsService {
 
     @Autowired
-    userRepository repositery;
+    userRepository repository;
 
     @Override
     public SocialUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return new SecurityUser(repositery.findByEmail(username));
+        return new SecurityUser(repository.findByEmail(username));
     }
 
     @Override

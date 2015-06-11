@@ -15,6 +15,12 @@ public class userSession {
     public userSession() {
     }
 
+    public userSession(String name, String session, thymeleafLearn.domain.UserType userType) {
+        Name = name;
+        Session = session;
+        UserType = userType;
+    }
+
     public userSession(String name, String session, UserType userType, WebRtcEndpoint webRtcEndpoint) {
         Name = name;
         Session = session;

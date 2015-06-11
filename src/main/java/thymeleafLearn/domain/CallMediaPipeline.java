@@ -49,7 +49,7 @@ public class CallMediaPipeline {
         return this;
     }
 
-    public void AdduserSession(userSession userSession) {
+    public void AddUserSession(userSession userSession) {
         this.sessions.add(userSession);
     }
 

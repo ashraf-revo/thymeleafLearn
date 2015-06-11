@@ -21,7 +21,7 @@ public interface OnlineSession {
 
     public void AddUserToMediaPipeline(String MediaPipeline, Set<String> HaveAccess);
 
-    public boolean IhaveAccessToMediaPipeline(String MediaPipeline, String ME);
+    public boolean IHaveAccessToMediaPipeline(String MediaPipeline, String ME);
 
     public void RemoveMediaPipeline(String MediaPipeline);
 
@@ -35,5 +35,5 @@ public interface OnlineSession {
 
     public void PersonState(Boolean Sate, String name, String simpSessionId);
 
-    public void Notfiy(List<user> personList, String group, String user);
+    public void Notify(List<user> personList, String group, String user);
 }

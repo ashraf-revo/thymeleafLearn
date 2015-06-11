@@ -4,6 +4,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.social.UserIdSource;
 import org.springframework.social.config.annotation.SocialConfigurerAdapter;
+import org.springframework.social.connect.ConnectionFactoryLocator;
+import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.social.connect.web.ProviderSignInUtils;
 import org.springframework.social.security.AuthenticationNameUserIdSource;
 
@@ -18,7 +20,7 @@ public class socialConfig extends SocialConfigurerAdapter {
     }
 
     @Bean
-    public ProviderSignInUtils signInUtils() {
+    public ProviderSignInUtils signInUtils( ) {
         return new ProviderSignInUtils();
     }
 }

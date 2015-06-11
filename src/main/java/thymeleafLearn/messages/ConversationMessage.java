@@ -11,6 +11,7 @@ import java.io.Serializable;
 public class ConversationMessage implements Serializable {
     private MessageType messageType;
     private String Content;
+    private String Content1;
     private String From;
     private String To;
 
@@ -18,9 +19,10 @@ public class ConversationMessage implements Serializable {
     }
 
 
-    public ConversationMessage(MessageType messageType, String content, String from, String to) {
+    public ConversationMessage(MessageType messageType, String content,String content1, String from, String to) {
         this.messageType = messageType;
         Content = content;
+        Content1 = content1;
         From = from;
         To = to;
     }
@@ -58,6 +60,15 @@ public class ConversationMessage implements Serializable {
 
     public ConversationMessage setContent(String content) {
         Content = content;
+        return this;
+    }
+
+    public String getContent1() {
+        return Content1;
+    }
+
+    public ConversationMessage setContent1(String content1) {
+        Content1 = content1;
         return this;
     }
 }

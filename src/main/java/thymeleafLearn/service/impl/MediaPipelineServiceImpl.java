@@ -39,19 +39,19 @@ public class MediaPipelineServiceImpl implements MediaPipelineService {
         if (!HaveOrInMediaPipeline(sessions.getName())) {
             CallMediaPipeline pipeline = new CallMediaPipeline();
             pipeline.setMediaPipeline(kurentoClient.createMediaPipeline());
-            pipeline.AdduserSession(sessions.setWebRtcEndpoint(new WebRtcEndpoint.Builder(pipeline.getMediaPipeline()).build()));
+            pipeline.AddUserSession(sessions.setWebRtcEndpoint(new WebRtcEndpoint.Builder(pipeline.getMediaPipeline()).build()));
             pipeline.setMediaPipelineType(mediaPipelineType);
             mediaPipelines.add(pipeline);
             Optional<userSession> first = pipeline.getSessions().stream().findFirst();
             first.ifPresent(x -> {
                 String s = x.getWebRtcEndpoint().processOffer(sdpOffer);
                 template.convertAndSendToUser(sessions.getName(), "/topic/message",
-                        new ConversationMessage(MessageType.SDPOFFER_MESSAGE, s, null, null));
+                        new ConversationMessage(MessageType.SDPOFFER_MESSAGE, s, null, null, null));
             });
 
         }
         template.convertAndSendToUser(sessions.getName(), "/topic/message",
-                new ConversationMessage(MessageType.ERROR, "Error Create " + mediaPipelineType + " We Think You In Running Video Chat ", null, null));
+                new ConversationMessage(MessageType.ERROR, "Error Create " + mediaPipelineType + " We Think You In Running Video Chat ", null, null, null));
 
     }
 
@@ -63,12 +63,20 @@ public class MediaPipelineServiceImpl implements MediaPipelineService {
                 if (callMediaPipeline != null) {
                     WebRtcEndpoint rtcEndpoint = new WebRtcEndpoint.Builder(callMediaPipeline.getMediaPipeline()).build();
                     Optional<userSession> first = callMediaPipeline.getSessions().stream().findFirst();
-                    first.ifPresent(x -> x.getWebRtcEndpoint().connect(rtcEndpoint));
-                    callMediaPipeline.AdduserSession(sessions.setWebRtcEndpoint(rtcEndpoint));
+// i dont know what will happen if is one to one
+                    first.ifPresent(x -> {
+                        x.getWebRtcEndpoint().connect(rtcEndpoint);
+                        if (callMediaPipeline.getMediaPipelineType() == MediaPipelineType.One_To_One) {
+                            rtcEndpoint.connect(x.getWebRtcEndpoint());
+                            sessions.setUserType(UserType.SendAndReceive);
+                        }
+                    });
+
+                    callMediaPipeline.AddUserSession(sessions.setWebRtcEndpoint(rtcEndpoint));
                     Optional<String> x = Optional.of(sessions.getWebRtcEndpoint().processOffer(sdpOffer));
                     x.ifPresent(s -> {
                         template.convertAndSendToUser(sessions.getName(), "/topic/message",
-                                new ConversationMessage(MessageType.SDPOFFER_MESSAGE, s, null, null));
+                                new ConversationMessage(MessageType.SDPOFFER_MESSAGE, s, null, null, null));
                     });
 
                 }
@@ -76,7 +84,7 @@ public class MediaPipelineServiceImpl implements MediaPipelineService {
 
         }
         template.convertAndSendToUser(sessions.getName(), "/topic/message",
-                new ConversationMessage(MessageType.ERROR, "Error Adding You in This We Think You In Running Video Chat ", null, null));
+                new ConversationMessage(MessageType.ERROR, "Error Adding You in This We Think You In Running Video Chat ", null, null, null));
 
 
     }
@@ -88,7 +96,7 @@ public class MediaPipelineServiceImpl implements MediaPipelineService {
             callMediaPipeline.getMediaPipeline().release();
             callMediaPipeline.getSessions().stream().filter(x -> !x.getName().equals(NameOfCreatorOfPipeline)).forEach(x -> {
                 template.convertAndSendToUser(x.getName(), "/topic/message",
-                        new ConversationMessage(MessageType.RELEASE_PIPELINE_MESSAGE, null, null, null));
+                        new ConversationMessage(MessageType.RELEASE_PIPELINE_MESSAGE, null, null, null, null));
 
             });
             mediaPipelines.remove(callMediaPipeline);
@@ -107,7 +115,7 @@ public class MediaPipelineServiceImpl implements MediaPipelineService {
             }
         }).forEach(a -> {
             template.convertAndSendToUser(a.getName(), "/topic/message",
-                    new ConversationMessage(MessageType.RELEASE_PIPELINE_MESSAGE, null, null, null));
+                    new ConversationMessage(MessageType.RELEASE_PIPELINE_MESSAGE, null, null, null, null));
         });
         mediaPipelines.remove(CallMediaPipeline);
 
@@ -148,7 +156,15 @@ public class MediaPipelineServiceImpl implements MediaPipelineService {
                     if (z.getSession().equals(simpSessionId)) {
                         ReleasePipelineUsingSessionId(x, collect, simpSessionId);
                     } else {
-                        x.getSessions().removeIf(a -> a.getSession().equals(simpSessionId));
+                        x.getSessions().removeIf(a -> {
+                            if (a.getSession().equals(simpSessionId)) {
+                                //i think i should WebRtcEndpoint-->rtc.release();to who is not sender or if in one to one
+                                a.getWebRtcEndpoint().release();
+                                return true;
+                            }
+                            return false;
+                        });
+
                     }
                 });
 

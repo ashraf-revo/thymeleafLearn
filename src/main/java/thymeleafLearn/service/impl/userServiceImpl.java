@@ -16,22 +16,22 @@ import java.util.List;
 @Transactional
 public class userServiceImpl implements userService {
     @Autowired
-    userRepository Repositery;
+    userRepository Repository;
 
     @Override
     public user findByEmail(String email) {
-        return Repositery.findByEmail(email);
+        return Repository.findByEmail(email);
     }
 
     @Override
-    public List<user> findall() {
-        return Repositery.findall();
+    public List<user> findAll() {
+        return Repository.findall();
 
     }
 
     @Override
     public user save(user user) {
-        return Repositery.save(user);
+        return Repository.save(user);
     }
 
 }

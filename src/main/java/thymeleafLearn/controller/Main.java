@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.RememberMeServices;
@@ -16,12 +18,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 import thymeleafLearn.domain.user;
 import thymeleafLearn.messages.ConversationMessage;
+import thymeleafLearn.messages.MessageType;
 import thymeleafLearn.service.OnlineSession;
 import thymeleafLearn.service.userService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -42,14 +46,14 @@ public class Main {
 
     @RequestMapping(method = RequestMethod.GET)
     public String index(@ModelAttribute user user, Model model) {
-        model.addAttribute("users", userService.findall());
+        model.addAttribute("users", userService.findAll());
         return "index";
     }
 
     @PreAuthorize("hasPermission(1,1)")
     @RequestMapping(params = "id", method = RequestMethod.GET)
     public String user(@RequestParam("id") String id, @ModelAttribute user user, Model model) {
-        model.addAttribute("users", userService.findall());
+        model.addAttribute("users", userService.findAll());
         return "index";
     }
 
@@ -71,6 +75,7 @@ public class Main {
 
     @RequestMapping("/signup")
     public String signup(WebRequest request, HttpServletRequest req, HttpServletResponse res) {
+        System.out.println("hhhhhhhhhhh");
         Connection<?> connectionFromSession = signInUtils.getConnectionFromSession(request);
         if (connectionFromSession != null) {
             UserProfile userProfile = connectionFromSession.fetchUserProfile();
@@ -88,7 +93,6 @@ public class Main {
         }
         return "redirect:/error";
     }
-
     @RequestMapping("/socket")
     public String socket() {
         return "socket";
@@ -99,9 +103,9 @@ public class Main {
         return "videochat";
     }
 
-    @RequestMapping(value = "/message",method = RequestMethod.POST)
+    @RequestMapping(value = "/message", method = RequestMethod.POST)
     @ResponseBody
     public ConversationMessage message(@ModelAttribute ConversationMessage message) {
-        return message;
+        return message.setMessageType(MessageType.CREATE_PIPELINE_MESSAGE);
     }
 }

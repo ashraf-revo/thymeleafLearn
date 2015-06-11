@@ -18,7 +18,29 @@
         <relativePath/>
     </parent>
 
+    <!--<pluginRepositories>-->
+        <!--<pluginRepository>-->
+            <!--<id>spring-snapshots</id>-->
+            <!--<url>http://repo.spring.io/snapshot</url>-->
+        <!--</pluginRepository>-->
+        <!--<pluginRepository>-->
+            <!--<id>spring-milestones</id>-->
+            <!--<url>http://repo.spring.io/milestone</url>-->
+        <!--</pluginRepository>-->
+    <!--</pluginRepositories>-->
+
     <repositories>
+        <!--<repository>-->
+            <!--<id>spring-snapshots</id>-->
+            <!--<url>http://repo.spring.io/snapshot</url>-->
+            <!--<snapshots>-->
+                <!--<enabled>true</enabled>-->
+            <!--</snapshots>-->
+        <!--</repository>-->
+        <!--<repository>-->
+            <!--<id>spring-milestones</id>-->
+            <!--<url>http://repo.spring.io/milestone</url>-->
+        <!--</repository>-->
         <repository>
             <id>sonatype-nexus-snapshots</id>
             <name>Sonatype Nexus Snapshots</name>
@@ -99,7 +121,7 @@
             <version>${kurento.version}</version>
         </dependency>
     </dependencies>
- <build>
+    <build>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

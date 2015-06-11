@@ -59,7 +59,7 @@ public class OnlineSessionImpl implements OnlineSession {
     }
 
     @Override
-    public boolean IhaveAccessToMediaPipeline(String MediaPipeline, String ME) {
+    public boolean IHaveAccessToMediaPipeline(String MediaPipeline, String ME) {
         if (HaveAccessToMediaPipeline.contains(MediaPipeline))
             return HaveAccessToMediaPipeline.get(MediaPipeline).stream().anyMatch(x -> x.equals(ME));
         return false;
@@ -98,11 +98,11 @@ public class OnlineSessionImpl implements OnlineSession {
 //        ser.updatePerson(person);
     }
 
-    public synchronized void Notfiy(List<user> personList, String group, String user) {
+    public synchronized void Notify(List<user> personList, String group, String user) {
         for (user person : personList) {
             template.convertAndSendToUser(
                     person.getEmail(), "/topic/message",
-                    new ConversationMessage(MessageType.LOGOUT_MESSAGE, group, user, null));
+                    new ConversationMessage(MessageType.LOGOUT_MESSAGE, group, null, user, null));
         }
     }
 }
