@@ -54,7 +54,7 @@ public class PresenceEventListener implements ApplicationListener<ApplicationEve
             pipelineService.SomeOneRemoveSessionCheckHim(simpSessionId);
             onlineSession.UpdateOne(principal.getName(), s);
         } else {
-
+            pipelineService.SomeOneRemoveSessionCheckHim(simpSessionId);
             new Thread(() -> {
                 try {
                     Thread.sleep(10000);

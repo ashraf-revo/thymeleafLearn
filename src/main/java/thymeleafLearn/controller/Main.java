@@ -93,6 +93,7 @@ public class Main {
         }
         return "redirect:/error";
     }
+
     @RequestMapping("/socket")
     public String socket() {
         return "socket";
@@ -106,6 +107,6 @@ public class Main {
     @RequestMapping(value = "/message", method = RequestMethod.POST)
     @ResponseBody
     public ConversationMessage message(@ModelAttribute ConversationMessage message) {
-        return message.setMessageType(MessageType.CREATE_PIPELINE_MESSAGE);
+        return message;
     }
 }

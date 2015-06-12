@@ -12,5 +12,4 @@ public enum MessageType {
     ERROR,
     CREATE_PIPELINE_MESSAGE,
     JOIN_PIPELINE_MESSAGE
-
 }

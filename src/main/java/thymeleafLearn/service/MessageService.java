@@ -7,9 +7,10 @@ import thymeleafLearn.messages.ConversationMessage;
  * Created by ashraf on 6/11/15.
  */
 public interface MessageService {
-    public void HandelSDPOFFER_MESSAGE(ConversationMessage message, String sessionId, String name);
 
     public void HandelINVITE_TO_PIPELINE_MESSAGE(ConversationMessage message, String sessionId, String name);
 
     public void HandelCREATE_PIPELINE_MESSAGE(ConversationMessage message, String sessionId, String name);
+
+    public void HandeJOIN_PIPELINE_MESSAGE(ConversationMessage message, String sessionId, String name);
 }

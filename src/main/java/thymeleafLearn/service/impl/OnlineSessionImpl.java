@@ -28,6 +28,7 @@ public class OnlineSessionImpl implements OnlineSession {
     @Override
     public void CreateMediaPipeline(String MediaPipeline) {
         HaveAccessToMediaPipeline.put(MediaPipeline, new HashSet<>());
+
     }
 
     @Override
@@ -41,26 +42,30 @@ public class OnlineSessionImpl implements OnlineSession {
     }
 
     @Override
-    public void AddUserToMediaPipeline(String MediaPipeline, String HaveAccess) {
-        if (HaveAccessToMediaPipeline.contains(MediaPipeline))
+    public boolean AddUserToMediaPipeline(String MediaPipeline, String HaveAccess) {
+        if (HaveAccessToMediaPipeline.containsKey(MediaPipeline)) {
             HaveAccessToMediaPipeline.get(MediaPipeline).add(HaveAccess);
+            HaveAccessToMediaPipeline.forEach((s, strings) -> System.out.println(s + "  " + strings));
+            return true;
+        }
+        return false;
     }
 
     @Override
     public void AddUserToMediaPipeline(String MediaPipeline, Set<String> HaveAccess) {
-        if (HaveAccessToMediaPipeline.contains(MediaPipeline))
+        if (HaveAccessToMediaPipeline.containsKey(MediaPipeline))
             HaveAccessToMediaPipeline.get(MediaPipeline).addAll(HaveAccess);
     }
 
     @Override
     public void RemoveMediaPipeline(String MediaPipeline) {
 
-        if (HaveAccessToMediaPipeline.contains(MediaPipeline)) HaveAccessToMediaPipeline.remove(MediaPipeline);
+        if (HaveAccessToMediaPipeline.containsKey(MediaPipeline)) HaveAccessToMediaPipeline.remove(MediaPipeline);
     }
 
     @Override
     public boolean IHaveAccessToMediaPipeline(String MediaPipeline, String ME) {
-        if (HaveAccessToMediaPipeline.contains(MediaPipeline))
+        if (HaveAccessToMediaPipeline.containsKey(MediaPipeline))
             return HaveAccessToMediaPipeline.get(MediaPipeline).stream().anyMatch(x -> x.equals(ME));
         return false;
     }

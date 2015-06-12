@@ -6,10 +6,12 @@ import org.kurento.client.RecorderEndpoint;
 import org.kurento.client.WebRtcEndpoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import thymeleafLearn.domain.Greeting;
 import thymeleafLearn.domain.HelloMessage;
 import thymeleafLearn.messages.ConversationMessage;
@@ -52,17 +54,24 @@ public class GreetingController {
     }
 
     @MessageMapping("/message")
-    public void message(Principal principal, ConversationMessage message, SimpMessageHeaderAccessor header) {
+    public void message(Principal principal, @Payload ConversationMessage message, SimpMessageHeaderAccessor header) {
         String sessionId = header.getSessionId();
         String name = principal.getName();
         if (message.getMessageType() != null) {
-            if (message.getMessageType() == MessageType.SDPOFFER_MESSAGE)
-                messageService.HandelSDPOFFER_MESSAGE(message, sessionId, name);
-            if (message.getMessageType() == MessageType.INVITE_TO_PIPELINE_MESSAGE)
+            if (message.getMessageType() == MessageType.INVITE_TO_PIPELINE_MESSAGE) {
                 messageService.HandelINVITE_TO_PIPELINE_MESSAGE(message, sessionId, name);
-            if (message.getMessageType() == MessageType.CREATE_PIPELINE_MESSAGE)
+            } else if (message.getMessageType() == MessageType.CREATE_PIPELINE_MESSAGE) {
                 messageService.HandelCREATE_PIPELINE_MESSAGE(message, sessionId, name);
+            } else if (message.getMessageType() == MessageType.JOIN_PIPELINE_MESSAGE) {
+                messageService.HandeJOIN_PIPELINE_MESSAGE(message, sessionId, name);
+            }
         }
     }
 
+    @RequestMapping("/te")
+    @ResponseBody
+    public ConversationMessage ConversationMessage(ConversationMessage message) {
+        System.out.println(message.getContent());
+        return message;
+    }
 }

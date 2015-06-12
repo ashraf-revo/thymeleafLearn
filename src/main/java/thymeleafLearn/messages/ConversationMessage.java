@@ -1,6 +1,7 @@
 package thymeleafLearn.messages;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import thymeleafLearn.domain.MediaPipelineType;
 
 import java.io.Serializable;
 
@@ -10,21 +11,21 @@ import java.io.Serializable;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ConversationMessage implements Serializable {
     private MessageType messageType;
-    private String Content;
-    private String Content1;
-    private String From;
-    private String To;
+    private String content;
+    private MediaPipelineType mediaPipelineType;
+    private String from;
+    private String to;
 
     public ConversationMessage() {
     }
 
 
-    public ConversationMessage(MessageType messageType, String content,String content1, String from, String to) {
+    public ConversationMessage(MessageType messageType, String content, MediaPipelineType mediaPipelineType, String from, String to) {
         this.messageType = messageType;
-        Content = content;
-        Content1 = content1;
-        From = from;
-        To = to;
+        this.content = content;
+        this.mediaPipelineType = mediaPipelineType;
+        this.from = from;
+        this.to = to;
     }
 
     public MessageType getMessageType() {
@@ -37,38 +38,38 @@ public class ConversationMessage implements Serializable {
     }
 
     public String getFrom() {
-        return From;
+        return from;
     }
 
     public ConversationMessage setFrom(String from) {
-        From = from;
+        this.from = from;
         return this;
     }
 
     public String getTo() {
-        return To;
+        return to;
     }
 
     public ConversationMessage setTo(String to) {
-        To = to;
+        this.to = to;
         return this;
     }
 
     public String getContent() {
-        return Content;
+        return content;
     }
 
     public ConversationMessage setContent(String content) {
-        Content = content;
+        this.content = content;
         return this;
     }
 
-    public String getContent1() {
-        return Content1;
+    public MediaPipelineType getMediaPipelineType() {
+        return mediaPipelineType;
     }
 
-    public ConversationMessage setContent1(String content1) {
-        Content1 = content1;
+    public ConversationMessage setMediaPipelineType(MediaPipelineType mediaPipelineType) {
+        this.mediaPipelineType = mediaPipelineType;
         return this;
     }
 }

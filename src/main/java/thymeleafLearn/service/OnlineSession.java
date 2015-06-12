@@ -17,7 +17,7 @@ public interface OnlineSession {
 
     public void CreateMediaPipeline(String MediaPipeline, String HaveAccess);
 
-    public void AddUserToMediaPipeline(String MediaPipeline, String HaveAccess);
+    public boolean AddUserToMediaPipeline(String MediaPipeline, String HaveAccess);
 
     public void AddUserToMediaPipeline(String MediaPipeline, Set<String> HaveAccess);
 

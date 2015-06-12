@@ -49,8 +49,7 @@ public class MediaPipelineServiceImpl implements MediaPipelineService {
                         new ConversationMessage(MessageType.SDPOFFER_MESSAGE, s, null, null, null));
             });
 
-        }
-        template.convertAndSendToUser(sessions.getName(), "/topic/message",
+        } else template.convertAndSendToUser(sessions.getName(), "/topic/message",
                 new ConversationMessage(MessageType.ERROR, "Error Create " + mediaPipelineType + " We Think You In Running Video Chat ", null, null, null));
 
     }
@@ -82,8 +81,7 @@ public class MediaPipelineServiceImpl implements MediaPipelineService {
                 }
             }
 
-        }
-        template.convertAndSendToUser(sessions.getName(), "/topic/message",
+        } else template.convertAndSendToUser(sessions.getName(), "/topic/message",
                 new ConversationMessage(MessageType.ERROR, "Error Adding You in This We Think You In Running Video Chat ", null, null, null));
 
 
@@ -96,8 +94,7 @@ public class MediaPipelineServiceImpl implements MediaPipelineService {
             callMediaPipeline.getMediaPipeline().release();
             callMediaPipeline.getSessions().stream().filter(x -> !x.getName().equals(NameOfCreatorOfPipeline)).forEach(x -> {
                 template.convertAndSendToUser(x.getName(), "/topic/message",
-                        new ConversationMessage(MessageType.RELEASE_PIPELINE_MESSAGE, null, null, null, null));
-
+                        new ConversationMessage(MessageType.RELEASE_PIPELINE_MESSAGE, null, null, NameOfCreatorOfPipeline, null));
             });
             mediaPipelines.remove(callMediaPipeline);
             onlineSession.RemoveMediaPipeline(NameOfCreatorOfPipeline);
