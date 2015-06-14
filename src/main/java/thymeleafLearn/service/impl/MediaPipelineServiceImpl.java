@@ -47,11 +47,13 @@ public class MediaPipelineServiceImpl implements MediaPipelineService {
                 String s = x.getWebRtcEndpoint().processOffer(sdpOffer);
                 template.convertAndSendToUser(sessions.getName(), "/topic/message",
                         new ConversationMessage(MessageType.SDPOFFER_MESSAGE, s, null, null, null));
+                onlineSession.CreateMediaPipeline(sessions.getName());
             });
 
-        } else template.convertAndSendToUser(sessions.getName(), "/topic/message",
-                new ConversationMessage(MessageType.ERROR, "Error Create " + mediaPipelineType + " We Think You In Running Video Chat ", null, null, null));
-
+        } else {
+            template.convertAndSendToUser(sessions.getName(), "/topic/message",
+                    new ConversationMessage(MessageType.ERROR, "Error Create " + mediaPipelineType + " We Think You In Running Video Chat ", null, null, null));
+        }
     }
 
     @Override
@@ -62,7 +64,6 @@ public class MediaPipelineServiceImpl implements MediaPipelineService {
                 if (callMediaPipeline != null) {
                     WebRtcEndpoint rtcEndpoint = new WebRtcEndpoint.Builder(callMediaPipeline.getMediaPipeline()).build();
                     Optional<userSession> first = callMediaPipeline.getSessions().stream().findFirst();
-// i dont know what will happen if is one to one
                     first.ifPresent(x -> {
                         x.getWebRtcEndpoint().connect(rtcEndpoint);
                         if (callMediaPipeline.getMediaPipelineType() == MediaPipelineType.One_To_One) {
@@ -155,7 +156,6 @@ public class MediaPipelineServiceImpl implements MediaPipelineService {
                     } else {
                         x.getSessions().removeIf(a -> {
                             if (a.getSession().equals(simpSessionId)) {
-                                //i think i should WebRtcEndpoint-->rtc.release();to who is not sender or if in one to one
                                 a.getWebRtcEndpoint().release();
                                 return true;
                             }

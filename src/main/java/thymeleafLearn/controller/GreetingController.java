@@ -2,7 +2,6 @@ package thymeleafLearn.controller;
 
 import org.kurento.client.KurentoClient;
 import org.kurento.client.MediaPipeline;
-import org.kurento.client.RecorderEndpoint;
 import org.kurento.client.WebRtcEndpoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -65,13 +64,9 @@ public class GreetingController {
             } else if (message.getMessageType() == MessageType.JOIN_PIPELINE_MESSAGE) {
                 messageService.HandeJOIN_PIPELINE_MESSAGE(message, sessionId, name);
             }
+            else{
+                System.out.println("nnnnnnnnnn");
+            }
         }
-    }
-
-    @RequestMapping("/te")
-    @ResponseBody
-    public ConversationMessage ConversationMessage(ConversationMessage message) {
-        System.out.println(message.getContent());
-        return message;
     }
 }

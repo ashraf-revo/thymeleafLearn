@@ -9,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.RememberMeServices;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.UserProfile;
 import org.springframework.social.connect.web.ProviderSignInUtils;
@@ -25,6 +26,7 @@ import thymeleafLearn.service.userService;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.security.Principal;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -75,7 +77,8 @@ public class Main {
 
     @RequestMapping("/signup")
     public String signup(WebRequest request, HttpServletRequest req, HttpServletResponse res) {
-        System.out.println("hhhhhhhhhhh");
+
+
         Connection<?> connectionFromSession = signInUtils.getConnectionFromSession(request);
         if (connectionFromSession != null) {
             UserProfile userProfile = connectionFromSession.fetchUserProfile();
@@ -86,13 +89,19 @@ public class Main {
                 u = userService.save(new user(userProfile.getEmail(), iid, userProfile.getName()));
             }
             Authentication authentication = new UsernamePasswordAuthenticationToken(u.getEmail(), u.getPassword(), u.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth != null) {
+                System.out.println("here");
+                new SecurityContextLogoutHandler().logout(req, res, auth);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
             signInUtils.doPostSignUp(userProfile.getEmail(), request);
             services.loginSuccess(req, res, authentication);
             return "redirect:/";
         }
         return "redirect:/error";
     }
+
 
     @RequestMapping("/socket")
     public String socket() {
@@ -104,9 +113,12 @@ public class Main {
         return "videochat";
     }
 
-    @RequestMapping(value = "/message", method = RequestMethod.POST)
+    @RequestMapping(value = "/message")
     @ResponseBody
-    public ConversationMessage message(@ModelAttribute ConversationMessage message) {
-        return message;
+    public Set<String> message(Principal principal) {
+        return onlineSession.WhatMediaPipelineICanAccess(principal.getName());
     }
+
+    @Autowired
+    OnlineSession onlineSession;
 }

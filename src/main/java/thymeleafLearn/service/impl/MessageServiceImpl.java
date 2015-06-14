@@ -45,7 +45,6 @@ public class MessageServiceImpl implements MessageService {
         }
         mediaPipelineService.CreatePipeline(mediaPipelineType,
                 new userSession(name, sessionId, userType), message.getContent());
-        onlineSession.CreateMediaPipeline(name);
     }
 
     @Override
@@ -53,6 +52,10 @@ public class MessageServiceImpl implements MessageService {
         if (onlineSession.IHaveAccessToMediaPipeline(message.getTo(), name)) {
             userSession session = new userSession(name, sessionId, UserType.Receive);
             mediaPipelineService.addUserToPipeline(message.getTo(), session, message.getContent());
+        } else {
+            template.convertAndSendToUser(name, "/topic/message",
+                    new ConversationMessage(MessageType.ERROR, "you don't ability to access  "+message.getTo()+" ask him to invite you or it may be not exist", null, name, null));
+
         }
     }
 }

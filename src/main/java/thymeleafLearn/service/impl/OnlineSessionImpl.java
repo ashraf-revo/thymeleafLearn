@@ -1,7 +1,6 @@
 package thymeleafLearn.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import thymeleafLearn.domain.user;
@@ -14,6 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * Created by ashraf on 6/9/15.
@@ -58,8 +58,13 @@ public class OnlineSessionImpl implements OnlineSession {
     }
 
     @Override
-    public void RemoveMediaPipeline(String MediaPipeline) {
+    public Set<String> WhatMediaPipelineICanAccess(String me) {
+        return HaveAccessToMediaPipeline.entrySet().stream()
+                .filter(x -> x.getValue().stream().anyMatch(q -> q.equals(me))).map(x -> x.getKey()).collect(Collectors.toSet());
+    }
 
+    @Override
+    public void RemoveMediaPipeline(String MediaPipeline) {
         if (HaveAccessToMediaPipeline.containsKey(MediaPipeline)) HaveAccessToMediaPipeline.remove(MediaPipeline);
     }
 

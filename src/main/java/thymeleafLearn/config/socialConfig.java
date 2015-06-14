@@ -20,7 +20,7 @@ public class socialConfig extends SocialConfigurerAdapter {
     }
 
     @Bean
-    public ProviderSignInUtils signInUtils( ) {
-        return new ProviderSignInUtils();
+    public ProviderSignInUtils signInUtils(ConnectionFactoryLocator connectionFactoryLocator,UsersConnectionRepository connectionRepository) {
+        return new ProviderSignInUtils(connectionFactoryLocator,connectionRepository );
     }
 }
