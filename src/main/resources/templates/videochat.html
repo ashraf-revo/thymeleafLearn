@@ -1,5 +1,7 @@
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+    <meta name="_csrf" th:content="${_csrf.token}" />
     <!--<link rel="shortcut icon" href="./img/revo.png" type="image/png"/>-->
     <script src="./js/kurento-utils.js"></script>
     <script src="./js/adapter.js"></script>
@@ -7,6 +9,7 @@
     <script src="./js/sockjs-0.3.4.js"></script>
     <script src="./js/stomp.js"></script>
     <script src="./js/app.js"></script>
+    <script src="./js/jquery-1.11.3.min.js"></script>
 
     <title>Revo</title>
 </head>

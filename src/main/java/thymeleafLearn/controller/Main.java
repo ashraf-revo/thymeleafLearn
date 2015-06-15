@@ -49,7 +49,7 @@ public class Main {
     @RequestMapping(method = RequestMethod.GET)
     public String index(@ModelAttribute user user, Model model) {
         model.addAttribute("users", userService.findAll());
-        return "index";
+         return "index";
     }
 
     @PreAuthorize("hasPermission(1,1)")
@@ -91,7 +91,6 @@ public class Main {
             Authentication authentication = new UsernamePasswordAuthenticationToken(u.getEmail(), u.getPassword(), u.getAuthorities());
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             if (auth != null) {
-                System.out.println("here");
                 new SecurityContextLogoutHandler().logout(req, res, auth);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }

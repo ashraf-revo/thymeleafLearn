@@ -32,7 +32,7 @@ public class securityConfig extends WebSecurityConfigurerAdapter {
                 and().authorizeRequests().antMatchers("/**").authenticated().
                 and().logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout")).
                 and().formLogin().and().rememberMe().key(key).rememberMeServices(rememberMeServices())
-                .and().apply(new SpringSocialConfigurer());
+                .and().apply(new SpringSocialConfigurer()).and();
     }
 
     @Bean

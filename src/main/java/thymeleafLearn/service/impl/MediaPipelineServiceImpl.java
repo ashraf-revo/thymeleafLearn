@@ -42,7 +42,7 @@ public class MediaPipelineServiceImpl implements MediaPipelineService {
             pipeline.AddUserSession(sessions.setWebRtcEndpoint(new WebRtcEndpoint.Builder(pipeline.getMediaPipeline()).build()));
             pipeline.setMediaPipelineType(mediaPipelineType);
             mediaPipelines.add(pipeline);
-            Optional<userSession> first = pipeline.getSessions().stream().findFirst();
+            Optional<userSession> first = pipeline.getSessions().parallelStream().findFirst();
             first.ifPresent(x -> {
                 String s = x.getWebRtcEndpoint().processOffer(sdpOffer);
                 template.convertAndSendToUser(sessions.getName(), "/topic/message",
@@ -63,10 +63,11 @@ public class MediaPipelineServiceImpl implements MediaPipelineService {
                 CallMediaPipeline callMediaPipeline = getCallMediaPipeline(NameOfCreatorOfPipeline);
                 if (callMediaPipeline != null) {
                     WebRtcEndpoint rtcEndpoint = new WebRtcEndpoint.Builder(callMediaPipeline.getMediaPipeline()).build();
-                    Optional<userSession> first = callMediaPipeline.getSessions().stream().findFirst();
+                    Optional<userSession> first = callMediaPipeline.getSessions().parallelStream().findFirst();
                     first.ifPresent(x -> {
                         x.getWebRtcEndpoint().connect(rtcEndpoint);
                         if (callMediaPipeline.getMediaPipelineType() == MediaPipelineType.One_To_One) {
+                            System.out.println("connect the two ");
                             rtcEndpoint.connect(x.getWebRtcEndpoint());
                             sessions.setUserType(UserType.SendAndReceive);
                         }
@@ -93,7 +94,7 @@ public class MediaPipelineServiceImpl implements MediaPipelineService {
         CallMediaPipeline callMediaPipeline = getCallMediaPipeline(NameOfCreatorOfPipeline);
         if (callMediaPipeline != null) {
             callMediaPipeline.getMediaPipeline().release();
-            callMediaPipeline.getSessions().stream().filter(x -> !x.getName().equals(NameOfCreatorOfPipeline)).forEach(x -> {
+            callMediaPipeline.getSessions().parallelStream().filter(x -> !x.getName().equals(NameOfCreatorOfPipeline)).forEach(x -> {
                 template.convertAndSendToUser(x.getName(), "/topic/message",
                         new ConversationMessage(MessageType.RELEASE_PIPELINE_MESSAGE, null, null, NameOfCreatorOfPipeline, null));
             });
@@ -105,7 +106,7 @@ public class MediaPipelineServiceImpl implements MediaPipelineService {
     @Override
     public void ReleasePipelineUsingSessionId(CallMediaPipeline CallMediaPipeline, List<userSession> collect, String simpSessionId) {
         CallMediaPipeline.getMediaPipeline().release();
-        collect.stream().filter(z -> {
+        collect.parallelStream().filter(z -> {
             if (z.getSession() != simpSessionId) return true;
             else {
                 onlineSession.RemoveMediaPipeline(z.getName());
@@ -121,14 +122,14 @@ public class MediaPipelineServiceImpl implements MediaPipelineService {
 
     @Override
     public boolean HaveOrInMediaPipeline(String Name) {
-        return mediaPipelines.stream().map(x -> x.getSessions().stream().anyMatch(u -> u.getName().endsWith(Name))).anyMatch(x -> x);
+        return mediaPipelines.parallelStream().map(x -> x.getSessions().parallelStream().anyMatch(u -> u.getName().endsWith(Name))).anyMatch(x -> x);
     }
 
     @Override
     public CallMediaPipeline getCallMediaPipeline(String Creator) {
 
-        Optional<CallMediaPipeline> any = mediaPipelines.stream().filter(x -> {
-            Optional<userSession> first = x.getSessions().stream().findFirst();
+        Optional<CallMediaPipeline> any = mediaPipelines.parallelStream().filter(x -> {
+            Optional<userSession> first = x.getSessions().parallelStream().findFirst();
             if (first.isPresent() && first.get().getName().equals(Creator)) {
                 return true;
             }
@@ -142,14 +143,14 @@ public class MediaPipelineServiceImpl implements MediaPipelineService {
 
     @Override
     public void SomeOneRemoveSessionCheckHim(String simpSessionId) {
-        Optional<CallMediaPipeline> any = mediaPipelines.stream().filter(x ->
-                        x.getSessions().stream().anyMatch(z -> z.getSession().equals(simpSessionId))
+        Optional<CallMediaPipeline> any = mediaPipelines.parallelStream().filter(x ->
+                        x.getSessions().parallelStream().anyMatch(z -> z.getSession().equals(simpSessionId))
         ).findAny();
 
         any.ifPresent(x -> {
-            List<userSession> collect = x.getSessions().stream().collect(Collectors.toList());
+            List<userSession> collect = x.getSessions().parallelStream().collect(Collectors.toList());
             if (x.getMediaPipelineType() == MediaPipelineType.One_To_Many) {
-                Optional<userSession> sender = collect.stream().filter(z -> z.getUserType() == UserType.Send).findAny();
+                Optional<userSession> sender = collect.parallelStream().filter(z -> z.getUserType() == UserType.Send).findAny();
                 sender.ifPresent(z -> {
                     if (z.getSession().equals(simpSessionId)) {
                         ReleasePipelineUsingSessionId(x, collect, simpSessionId);

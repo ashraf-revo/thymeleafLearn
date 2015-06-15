@@ -3,6 +3,7 @@ package thymeleafLearn.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import thymeleafLearn.domain.CallMediaPipeline;
 import thymeleafLearn.domain.MediaPipelineType;
 import thymeleafLearn.domain.UserType;
 import thymeleafLearn.domain.userSession;
@@ -29,10 +30,13 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public void HandelINVITE_TO_PIPELINE_MESSAGE(ConversationMessage message, String sessionId, String name) {
         boolean b = onlineSession.AddUserToMediaPipeline(name, message.getTo());
+        CallMediaPipeline callMediaPipeline = mediaPipelineService.getCallMediaPipeline(name);
 
-        if (b) {
+        if (b && callMediaPipeline != null) {
+            //name
+
             template.convertAndSendToUser(message.getTo(), "/topic/message",
-                    new ConversationMessage(MessageType.INVITE_TO_PIPELINE_MESSAGE, message.getTo(), null, name, null));
+                    new ConversationMessage(MessageType.INVITE_TO_PIPELINE_MESSAGE, String.valueOf(callMediaPipeline.getMediaPipelineType()), null, name, message.getTo()));
         }
     }
 
@@ -54,7 +58,7 @@ public class MessageServiceImpl implements MessageService {
             mediaPipelineService.addUserToPipeline(message.getTo(), session, message.getContent());
         } else {
             template.convertAndSendToUser(name, "/topic/message",
-                    new ConversationMessage(MessageType.ERROR, "you don't ability to access  "+message.getTo()+" ask him to invite you or it may be not exist", null, name, null));
+                    new ConversationMessage(MessageType.ERROR, "you don't ability to access  " + message.getTo() + " ask him to invite you or it may be not exist", null, name, null));
 
         }
     }

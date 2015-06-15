@@ -34,7 +34,6 @@ public class PresenceEventListener implements ApplicationListener<ApplicationEve
         final String simpSessionId = SimpMessageHeaderAccessor.getSessionId(event.getMessage().getHeaders());
         final Set<String> s = onlineSession.UserSessions(principal.getName());
         if (s == null) {
-            System.out.println("i will conect for " + principal.getName());
             onlineSession.PersonState(true, principal.getName(), simpSessionId);
 //            onlineSession.Notfiy(ser.MyonlineFrindes(principal.getName()), "online", principal.getName());
         } else {
@@ -60,7 +59,6 @@ public class PresenceEventListener implements ApplicationListener<ApplicationEve
                     Thread.sleep(10000);
                     Set<String> s1 = onlineSession.UserSessions(principal.getName());
                     if (s1.size() == 1) {
-                        System.out.println("i will disconect for " + principal.getName());
 //                            onlineSession.Notfiy(ser.MyonlineFrindes(principal.getName()), "offline", principal.getName());
                         onlineSession.PersonState(false, principal.getName(), "");
                     } else {

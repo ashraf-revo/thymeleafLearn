@@ -64,9 +64,6 @@ public class GreetingController {
             } else if (message.getMessageType() == MessageType.JOIN_PIPELINE_MESSAGE) {
                 messageService.HandeJOIN_PIPELINE_MESSAGE(message, sessionId, name);
             }
-            else{
-                System.out.println("nnnnnnnnnn");
-            }
         }
     }
 }

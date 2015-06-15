@@ -45,7 +45,6 @@ public class OnlineSessionImpl implements OnlineSession {
     public boolean AddUserToMediaPipeline(String MediaPipeline, String HaveAccess) {
         if (HaveAccessToMediaPipeline.containsKey(MediaPipeline)) {
             HaveAccessToMediaPipeline.get(MediaPipeline).add(HaveAccess);
-            HaveAccessToMediaPipeline.forEach((s, strings) -> System.out.println(s + "  " + strings));
             return true;
         }
         return false;
@@ -59,8 +58,8 @@ public class OnlineSessionImpl implements OnlineSession {
 
     @Override
     public Set<String> WhatMediaPipelineICanAccess(String me) {
-        return HaveAccessToMediaPipeline.entrySet().stream()
-                .filter(x -> x.getValue().stream().anyMatch(q -> q.equals(me))).map(x -> x.getKey()).collect(Collectors.toSet());
+        return HaveAccessToMediaPipeline.entrySet().parallelStream()
+                .filter(x -> x.getValue().parallelStream().anyMatch(q -> q.equals(me))).map(x -> x.getKey()).collect(Collectors.toSet());
     }
 
     @Override
@@ -71,7 +70,7 @@ public class OnlineSessionImpl implements OnlineSession {
     @Override
     public boolean IHaveAccessToMediaPipeline(String MediaPipeline, String ME) {
         if (HaveAccessToMediaPipeline.containsKey(MediaPipeline))
-            return HaveAccessToMediaPipeline.get(MediaPipeline).stream().anyMatch(x -> x.equals(ME));
+            return HaveAccessToMediaPipeline.get(MediaPipeline).parallelStream().anyMatch(x -> x.equals(ME));
         return false;
     }
 
