@@ -8,7 +8,7 @@ window.onload = function () {
     videoInput = document.getElementById('videoInput');
     videoOutput = document.getElementById('videoOutput');
 
-    var socket = new SockJS('/hello');
+    var socket = new SockJS('/revox/hello');
     stompClient = Stomp.over(socket);
 
     var csrfToken = $("meta[name='_csrf']").attr("content");

@@ -63,8 +63,8 @@ public class Main {
     public String save(user u, Model model, HttpServletRequest request) {
         userService.save(u);
         if (!u.getFile().isEmpty()) {
-            try {
-                BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(request.getRealPath("") + File.separator + "WEB-INF" + File.separator + "classes" + File.separator + "static/" + File.separator + u.getImagePath())));
+            try {///home/ashraf/apache-tomcat-8.0.23/webapps/revox/WEB-INF/classes/static
+                BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(request.getRealPath("") + File.separator + "WEB-INF" + File.separator + "classes" + File.separator + "static" + File.separator + u.getImagePath())));
                 stream.write(u.getFile().getBytes());
                 stream.close();
             } catch (FileNotFoundException e) {
